@@ -118,6 +118,7 @@ class OpenArm_v10HW : public hardware_interface::SystemInterface {
   std::string arm_prefix_;
   bool hand_;
   bool can_fd_;
+  bool enable_motor_control_;  // If false, motors are free (no control)
 
   // OpenArm instance
   std::unique_ptr<openarm::can::socket::OpenArm> openarm_;

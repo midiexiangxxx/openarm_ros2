@@ -60,10 +60,22 @@ bool OpenArm_v10HW::parse_config(const hardware_interface::HardwareInfo& info) {
     can_fd_ = (value == "true");
   }
 
+  // Parse enable_motor_control (default: true)
+  // Set to false for read-only mode (motors will be free to move)
+  it = info.hardware_parameters.find("enable_motor_control");
+  if (it == info.hardware_parameters.end()) {
+    enable_motor_control_ = true;  // Default to true (normal control mode)
+  } else {
+    std::string value = it->second;
+    std::transform(value.begin(), value.end(), value.begin(), ::tolower);
+    enable_motor_control_ = (value == "true");
+  }
+
   RCLCPP_INFO(rclcpp::get_logger("OpenArm_v10HW"),
-              "Configuration: CAN=%s, arm_prefix=%s, hand=%s, can_fd=%s",
+              "Configuration: CAN=%s, arm_prefix=%s, hand=%s, can_fd=%s, motor_control=%s",
               can_interface_.c_str(), arm_prefix_.c_str(),
-              hand_ ? "enabled" : "disabled", can_fd_ ? "enabled" : "disabled");
+              hand_ ? "enabled" : "disabled", can_fd_ ? "enabled" : "disabled",
+              enable_motor_control_ ? "enabled" : "disabled");
   return true;
 }
 
@@ -202,8 +214,13 @@ hardware_interface::CallbackReturn OpenArm_v10HW::on_activate(
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
   openarm_->recv_all();
 
-  // Return to zero position
-  return_to_zero();
+  // Return to zero position only if motor control is enabled
+  if (enable_motor_control_) {
+    return_to_zero();
+  } else {
+    RCLCPP_INFO(rclcpp::get_logger("OpenArm_v10HW"),
+                "Skipping return_to_zero() - motor control is disabled (read-only mode)");
+  }
 
   RCLCPP_INFO(rclcpp::get_logger("OpenArm_v10HW"), "OpenArm V10 activated");
   return CallbackReturn::SUCCESS;
@@ -257,6 +274,12 @@ hardware_interface::return_type OpenArm_v10HW::read(
 
 hardware_interface::return_type OpenArm_v10HW::write(
     const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/) {
+  // If motor control is disabled, skip writing commands
+  // This allows the motors to be freely movable (zero impedance mode)
+  if (!enable_motor_control_) {
+    return hardware_interface::return_type::OK;
+  }
+
   // Control arm motors with MIT control
   std::vector<openarm::damiao_motor::MITParam> arm_params;
   for (size_t i = 0; i < ARM_DOF; ++i) {

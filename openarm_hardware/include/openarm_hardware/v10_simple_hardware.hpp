@@ -101,16 +101,16 @@ class OpenArm_v10HW : public hardware_interface::SystemInterface {
   const uint32_t DEFAULT_GRIPPER_RECV_CAN_ID = 0x18;
 
   // Default gains
-  const std::vector<double> DEFAULT_KP = {20.0, 20.0, 20.0, 20.0,
-                                          5.0,  5.0,  5.0,  0.5};
-  const std::vector<double> DEFAULT_KD = {2.75, 2.5, 0.7, 0.4,
-                                          0.7,  0.6, 0.5, 0.1};
+  const std::vector<double> DEFAULT_KP = {400.0, 400.0, 500.0, 500.0,
+                                          40.0,  80.0,  80.0,  0.5};
+  const std::vector<double> DEFAULT_KD = {2.0, 2.0, 3.0, 3.0,
+                                          0.2,  0.2, 0.2, 0.1};
 
   const double GRIPPER_JOINT_0_POSITION = 0.044;
   const double GRIPPER_JOINT_1_POSITION = 0.0;
   const double GRIPPER_MOTOR_0_RADIANS = 0.0;
   const double GRIPPER_MOTOR_1_RADIANS = -1.0472;
-  const double GRIPPER_DEFAULT_KP = 5.0;
+  const double GRIPPER_DEFAULT_KP = 7.0;
   const double GRIPPER_DEFAULT_KD = 0.1;
 
   // Configuration

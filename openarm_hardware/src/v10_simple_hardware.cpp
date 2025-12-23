@@ -72,7 +72,8 @@ bool OpenArm_v10HW::parse_config(const hardware_interface::HardwareInfo& info) {
   }
 
   RCLCPP_INFO(rclcpp::get_logger("OpenArm_v10HW"),
-              "Configuration: CAN=%s, arm_prefix=%s, hand=%s, can_fd=%s, motor_control=%s",
+              "Configuration: CAN=%s, arm_prefix=%s, hand=%s, can_fd=%s, "
+              "motor_control=%s",
               can_interface_.c_str(), arm_prefix_.c_str(),
               hand_ ? "enabled" : "disabled", can_fd_ ? "enabled" : "disabled",
               enable_motor_control_ ? "enabled" : "disabled");
@@ -295,6 +296,13 @@ hardware_interface::return_type OpenArm_v10HW::write(
         {{GRIPPER_DEFAULT_KP, GRIPPER_DEFAULT_KD, motor_command, 0, 0}});
   }
   openarm_->recv_all(1000);
+  // RCLCPP_INFO(rclcpp::get_logger("OpenArmHW"),
+  //             "Joints Cmd: %f,%f,%f,%f,%f,%f,%f", pos_commands_[0],
+  //             pos_commands_[1], pos_commands_[2], pos_commands_[3],
+  //             pos_commands_[4], pos_commands_[5], pos_commands_[6]);
+  // RCLCPP_ERROR(rclcpp::get_logger("OpenArmHW"), ">>> CURRENT KP: %f,%f, %f, %f, %f, %f, %f, <<",
+  //              DEFAULT_KP[0], DEFAULT_KP[1], DEFAULT_KP[2], DEFAULT_KP[3],
+  //              DEFAULT_KP[4], DEFAULT_KP[5], DEFAULT_KP[6]);
   return hardware_interface::return_type::OK;
 }
 

@@ -105,10 +105,10 @@ def robot_nodes_spawner(context: LaunchContext, description_package, description
 
 def generate_launch_description():
     """
-    启动OpenArm双臂机器人 - 只读取模式
+    Launch OpenArm bimanual robot in read-only mode
 
-    这个launch文件只启动joint_state_broadcaster，不启动任何轨迹控制器
-    电机将处于自由状态，可以手动拖动并记录位置
+    This launch file only starts the joint_state_broadcaster without any trajectory controllers.
+    Motors will be in free state and can be manually moved to record positions.
     """
 
     # Declare launch arguments
@@ -195,8 +195,8 @@ def generate_launch_description():
         arguments=["-d", rviz_config_file],
     )
 
-    # 只启动 joint_state_broadcaster，不启动控制器
-    # 这样电机将处于自由状态
+    # Only start joint_state_broadcaster, no trajectory controllers
+    # This keeps motors in free state
     joint_state_broadcaster_spawner = OpaqueFunction(
         function=lambda context: [Node(
             package="controller_manager",
@@ -220,6 +220,6 @@ def generate_launch_description():
             robot_nodes_spawner_func,
             rviz_node,
             delayed_joint_state_broadcaster,
-            # 注意：没有启动任何轨迹控制器或夹爪控制器
+            # Note: No trajectory or gripper controllers are started
         ]
     )
